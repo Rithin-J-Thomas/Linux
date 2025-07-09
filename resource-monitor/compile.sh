@@ -1,3 +1,3 @@
 #!/bin/bash
 
-g++ main.cpp common.cpp -o run_code  &&  ./run_code
+g++ main.cpp cpu.cpp shared.cpp -o run_code  &&  ./run_code

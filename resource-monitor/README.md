@@ -1,7 +1,6 @@
 # Resource monitor 
 
 A real-time resource monitoring tool which will shows usage and stats of :
-
 -  CPU (per-core usage)
 -  RAM & Swap memory
 -  Disk usage
@@ -9,7 +8,6 @@ A real-time resource monitoring tool which will shows usage and stats of :
 -  Running processes (PID, memory usage, command)
 -  Process control (kill switch)
 
- > [!NOTE]
-
+> [!NOTE]
 > This isn't a complete project yet. 
 

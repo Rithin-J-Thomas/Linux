@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <map>
 #include <sstream>
 #include <string>
 #include <iomanip>
@@ -15,5 +16,6 @@ public:
         void SystemUptime();
         void UptimeSecToMin_Hour();
         void BatteryPercentage();
-        std::vector<std::string> CpuInfoDataMethod();
+        void CpuInfoDataMethod();
+
 };

@@ -4,22 +4,10 @@ std::vector<std::string> strUptimeFromFileVector;
 
 void CpuBox::SystemUptime() // // gets System uptime time in seconds (uptime & idle time)
 {
-        std::string uptime;
-        std::ifstream uptimeFile("/proc/uptime"); // // gets file
-        while (getline(uptimeFile, uptime))       // // gets file's contents
-        {
-                // // std::string fileuptimetext = uptime;
-                // // std::cout << fileuptimetext << "\n";
 
-                std::stringstream ss(uptime);
-
-                while (getline(ss, uptime, ' '))
-                {
-                        strUptimeFromFileVector.push_back(uptime); // // separate each floating points  using space
-                }
-        }
-
-        uptimeFile.close();
+        std::string path = "/proc/uptime";
+        char customDelimiter = ' ';
+        strUptimeFromFileVector = GetData(path, customDelimiter);
 }
 
 void CpuBox::UptimeSecToMin_Hour()
@@ -46,8 +34,8 @@ void CpuBox::UptimeSecToMin_Hour()
 void CpuBox::BatteryPercentage()
 {
         std::string path = "/sys/class/power_supply/BAT0/capacity"; // // path of directory for Battery Percentage
-
-        std::vector<std::string> batteryDataVector = GetData(path); // // Data stored in a Vector from shared.cpp file's function
+        char customDelimiter = ' ';
+        std::vector<std::string> batteryDataVector = GetData(path, customDelimiter); // // Data stored in a Vector from shared.cpp file's function
 
         for (std::string i : batteryDataVector)
         {
@@ -55,20 +43,26 @@ void CpuBox::BatteryPercentage()
         }
 }
 
-// std::vector<std::string> CpuBox::CpuInfoDataMethod()
-// {
-//         std::vector<std::string> cpuInfoVector;
+void CpuBox::CpuInfoDataMethod()
+{
 
-        
+        std::string path = "/proc/cpuinfo";
+        char customDelimiter = ':';
+        std::vector<std::string> thisDataLineVector;
 
-//         return cpuInfoVector;
+        thisDataLineVector = GetData(path, customDelimiter);
 
+        int vectorCount = 0;
 
+        for (auto element : thisDataLineVector)
+        {
 
-
-// }
-
-// for (std::string time : strUptimeFromFileVector)
-// {
-//         std::cout << time << "\n";
-// }
+                if (element == "model name	")
+                {
+                        std::cout << "model name" << thisDataLineVector[vectorCount + 1] << "\n ";
+                        break;
+                }
+                vectorCount++;
+                // // //std::cout << vectorCount << "\n";
+        }
+}

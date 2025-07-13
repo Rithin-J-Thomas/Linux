@@ -1,18 +1,19 @@
 #include "shared.hpp"
 
 // // FUnction for getting data or pharsing data from a file
-std::vector<std::string> GetData(std::string filePath)
+std::vector<std::string> GetData(std::string filePath, char customDelimiter)
 {
 
         std::string data;
-        std::vector<std::string> dataVector;
+
+        std::vector<std::string> dataVector; // // store data in this vector and return it
         std::ifstream dataFile(filePath);
         while (getline(dataFile, data))
         {
-                std::stringstream ss(data);
-                while (getline(ss, data, ' '))
+                std::stringstream ss(data); // // gets data as objs and pass it as line like std::cin
+                while (getline(ss, data, customDelimiter))
                 {
-                        dataVector.push_back(data); // // separate each using space
+                        dataVector.emplace_back(data); // // separates each using space or colon or semi-colon or whatever and store data in vector
                 }
         }
 

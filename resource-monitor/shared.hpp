@@ -6,4 +6,4 @@
 #include <iostream>
 #include <sstream>
 
-std::vector <std::string> GetData(std::string filePath);
+std::vector <std::string> GetData(std::string filePath,char customDelimiter);

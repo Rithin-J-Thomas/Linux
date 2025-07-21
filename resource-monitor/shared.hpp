@@ -5,5 +5,8 @@
 #include <vector>
 #include <iostream>
 #include <sstream>
+#include <chrono>
+#include <thread>
 
-std::vector <std::string> GetData(std::string filePath,char customDelimiter);
+std::vector<std::string> GetDataFromFile(std::string filePath, char customDelimiter);
+void myCustomSleep(int sleepTime);

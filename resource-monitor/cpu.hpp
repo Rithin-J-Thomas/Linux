@@ -7,15 +7,16 @@
 #include <string>
 #include <iomanip>
 
-
 #include "shared.hpp"
+
+std::vector<std::string>CpuDataByLines();
 
 class CpuBox
 {
 public:
-        void SystemUptime();
-        void UptimeSecToMin_Hour();
-        void BatteryPercentage();
-        void CpuInfoDataMethod();
-
+        void SystemUptime();        // // for getting System Uptime (uptime & idle time)
+        void UptimeSecToMin_Hour(); // // display only uptime
+        void BatteryPercentage();   // // for Battery Percentage
+        void CpuModelName();        // // display Cpu Model Name
+        void FullCpuUsage();
 };

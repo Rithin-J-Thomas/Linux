@@ -1,6 +1,6 @@
 #include "shared.hpp"
 
-// // FUnction for getting data or pharsing data from a file
+// // FUnction for getting data or parsing data from a file
 std::vector<std::string> GetDataFromFile(std::string filePath, char customDelimiter)
 {
 
@@ -13,7 +13,7 @@ std::vector<std::string> GetDataFromFile(std::string filePath, char customDelimi
                 std::stringstream ss(data); // // gets data as objs and pass it as line like std::cin
                 while (getline(ss, data, customDelimiter))
                 {
-                        if(data != ""){
+                        if(data != "" ){
                                 dataVector.emplace_back(data); // // separates each using space or colon or semi-colon or whatever and store data in vector
                         }
                 }
@@ -24,7 +24,7 @@ std::vector<std::string> GetDataFromFile(std::string filePath, char customDelimi
         return dataVector;
 }
 
-
+// // // to make things wait 
 void myCustomSleep(int sleepTime)
 {
         std::this_thread::sleep_for(std::chrono::seconds(sleepTime));

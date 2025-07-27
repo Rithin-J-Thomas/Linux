@@ -9,16 +9,17 @@ int main()
 
         while (true)
         {
-                // std::cout << "\033[2J\033[1;1H";
+                std::cout << "\033[2J\033[1;1H";
+
                 // cpuBoxObj.UptimeSecToMin_Hour(); // //displays only uptime
 
                 // cpuBoxObj.BatteryPercentage(); // //for Battery Percentage
                 // cpuBoxObj.CpuModelName();      // //for display only Cpu Model Name
-                cpuBoxObj.FullCpuUsage();
+                //  cpuBoxObj.FullCpuUsage();
 
-
-                myCustomSleep(2);
-         }
+                cpuBoxObj.PerCoreUsage();
+                // myCustomSleep(2);
+        }
 
         return 0;
 }

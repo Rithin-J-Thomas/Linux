@@ -20,6 +20,7 @@ public:
         void UptimeSecToMin_Hour(); // // display only uptime
         void BatteryPercentage();   // // for Battery Percentage
         void CpuModelName();        // // display Cpu Model Name
-        void FullCpuUsage();
-        void PerCoreUsage();
+        void FullCpuUsage(); // // display full Cpu usage
+        void PerCoreUsage(); // // display per core's usage
+        void LoadAvg();
 };

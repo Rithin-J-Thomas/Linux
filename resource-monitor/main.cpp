@@ -1,25 +1,30 @@
 #include <iostream>
 
 #include "cpu.hpp"
+#include "proc.hpp"
 
 int main()
 {
 
-        CpuBox cpuBoxObj; // // cpu section's class obj
+        CpuBox cpuBoxObj;   // // cpu section's class obj
+        ProcBox procBoxObj; // // process section's class obj
 
-        while (true)
-        {
-                std::cout << "\033[2J\033[1;1H";
+        //  while (true)
+        //    {
+        //  std::cout << "\033[2J\033[1;1H";
 
-                // cpuBoxObj.UptimeSecToMin_Hour(); // //displays only uptime
+        // cpuBoxObj.UptimeSecToMin_Hour(); // //displays only uptime
 
-                // cpuBoxObj.BatteryPercentage(); // //for Battery Percentage
-                // cpuBoxObj.CpuModelName();      // //for display only Cpu Model Name
-                //  cpuBoxObj.FullCpuUsage();
+        // cpuBoxObj.BatteryPercentage(); // //for Battery Percentage
+        // cpuBoxObj.CpuModelName();      // //for display only Cpu Model Name
+        //  cpuBoxObj.FullCpuUsage();
 
-                cpuBoxObj.PerCoreUsage();
-                // myCustomSleep(2);
-        }
+        // cpuBoxObj.PerCoreUsage();
+
+        //      myCustomSleep(1);
+
+        procBoxObj.ProcessCollection();
+        // }
 
         return 0;
 }

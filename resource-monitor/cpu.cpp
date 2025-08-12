@@ -216,3 +216,9 @@ void CpuBox::PerCoreUsage()
                 std::cout << int(totalCoreUsage * 100) << "% " << "  C" << currentCore << "\n"; // //turns into 100%
         }
 }
+
+
+void CpuBox::LoadAvg()
+{
+        
+}

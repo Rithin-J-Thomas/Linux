@@ -1,5 +1,6 @@
 #include "shared.hpp"
 
+//  // //std::cout <<  << "\n";
 // // FUnction for getting data or parsing data from a file
 std::vector<std::string> GetDataFromFile(std::string filePath, char customDelimiter)
 {
@@ -38,23 +39,42 @@ std::string GetDataFromFile(std::string filePath)
         return data;
 }
 
-std::string GetEntireLine(std::string filePath, char customDelimiter)
+std::string GetEntireLineOfUid(std::string filePath, char customDelimiter , char dataLookFrom )
 {
-        std::string data;
+        std::string data, user = "", foundUid;
 
+        std::ifstream dataFile(filePath);
+        while (getline(dataFile, data, customDelimiter))
+        {
+                if (data.find(dataLookFrom) != std::string::npos)
+                {
+                        foundUid = data;
+                }
 
-        //std::ifstream dataFile(filePath);
-        // while (getline(dataFile, data))
-        // {
-        //         std::stringstream ss(data); 
-        //         getline(ss, data, customDelimiter);
+        } // std::cout << foundUid << "\t founded uid\n";
+        for (int i = 5; i <= 8; i++)
+        {
+                user += foundUid[i];
+        }
+        dataFile.close();
 
+        int intUserId = std::stoi(user);
+        std::string userName = getlogin(); // // // for finding regular user's name
+        // std::cout << userName << "\t user\n";
 
-        // }
-
-        // dataFile.close();
-
-         return data;
+        if (intUserId == 0)
+        {
+                return "Root";
+        }
+        else if (intUserId >= 1 && intUserId <= 999)
+        {
+                return "System";
+        }
+        else
+        {
+                return userName;
+        }
+        return " ";
 }
 
 // // // to make things wait

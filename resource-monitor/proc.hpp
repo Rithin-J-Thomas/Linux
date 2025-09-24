@@ -13,14 +13,15 @@
 #include <unistd.h>
 #include <sys/stat.h>
 
-void SingleProcessDetails(int  pid);
-std::string GetEntireLine(std::string filePath,char customDelimiter , std::string  dataLookFrom);
+void SingleProcessDetails(int pid);
+std::string GetEntireLine(std::string filePath, char customDelimiter, std::string dataLookFrom);
 std::string KBtoMB(std::string MEMString);
-
+// // // std::vector<std::string> SingleCpuUsage(std::string filePath, char delimiter);
+// // // std::vector<std::string> GetCpuUsage(std::string filePath_ForStatFile);
+// // // std::vector<std::string> EveryCpuUStimeUsage(char path);
 
 class ProcBox
 {
 public:
         void ProcessCollection();
-
 };

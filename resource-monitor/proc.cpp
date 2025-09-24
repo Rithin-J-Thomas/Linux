@@ -68,16 +68,18 @@ void ProcBox::ProcessCollection()
                 try
                 {
                         processID = std::stoi(files->d_name);
-                        //  // //std::cout << processID << "\n";
+                        //  // // std::cout << processID << "\n";
                 }
                 catch (const std::invalid_argument &e)
                 {
                         continue;
                 }
-
+        std::string filePath_ForStatFile = "/proc/" + std::to_string(processID) + "/stat"; // //  file path of each PID's stat
                 SingleProcessDetails(processID);
-        }
 
+
+        }
+        
         closedir(process);
 }
 
@@ -90,7 +92,7 @@ std::string GetEntireLine(std::string filePath, char customDelimiter, std::strin
         {
                 if (data.find(dataLookFrom) != std::string::npos)
                 {
-                       //   std::cout << data << "\n";
+                        //   std::cout << data << "\n";
                         return data;
                 }
         }
@@ -115,8 +117,64 @@ std::string KBtoMB(std::string MEMString)
                 }
                 int MEMDouble = stoi(MEMString) / 1024;
 
-             //   std::cout<<MEMDouble<<"\n";
+                //   std::cout<<MEMDouble<<"\n";
 
                 return std::to_string(MEMDouble) + " MB";
         }
 }
+
+// // // // takes only utime, stime of a single usage from stat
+// // // std::vector<std::string> SingleCpuUsage(std::string filePath, char delimiter)
+// // // {
+// // //         std::vector<std::string> usageDetail = GetDataFromFile(filePath, delimiter);
+// // //         std::vector<std::string> timeVector;
+// // //         timeVector.emplace_back(usageDetail[13]);
+// // //         timeVector.emplace_back(usageDetail[14]);
+
+// // //         return timeVector;
+// // // }
+
+// // // // // // gets stime , utime to find delta time this only return stime , utime
+// // // std::vector<std::string> GetCpuUsage(std::string filePath_ForStatFile)
+// // // {
+// // //         std::vector<std::string> timeVector;
+// // //         timeVector = SingleCpuUsage(filePath_ForStatFile, ' ');
+// // //         // std::cout<< timeVector[0] << "\t"<< timeVector[1] << "\n";
+// // //         return timeVector;
+// // // }
+
+
+// // // std::vector <std::string> EveryCpuUStimeUsage()
+// // // {
+// // //         std::vector <std::string> bothUsage;
+// // //          DIR *process; // // directory
+
+// // //         const char *path = "/proc"; // // char for opendir()
+
+// // //         process = opendir(path);
+
+// // //         struct dirent *files;
+
+// // //         if (process == NULL)
+// // //         {
+// // //                 perror("Failed opening directory");
+// // //                 return bothUsage;
+// // //         }
+
+// // //         while ((files = readdir(process)) != NULL)
+// // //         {
+// // //                 int processID = 0;
+// // //                 try
+// // //                 {
+// // //                         processID = std::stoi(files->d_name);
+// // //                         //  // // std::cout << processID << "\n";
+// // //                 }
+// // //                 catch (const std::invalid_argument &e)
+// // //                 {
+// // //                         continue;
+// // //                 }
+// // //         }
+
+
+// // //         return bothUsage;
+// // // }

@@ -4,6 +4,53 @@ std::vector<std::string> strUptimeFromFileVector, initialCpuUsageDataVector, fin
 
 // // std::cout<< " " ;
 
+CpuBox::CpuBox()
+{
+        fullCpuHistory.resize(200, 0);
+
+        int numCores = std::thread::hardware_concurrency();
+        perCoreHistory.resize(numCores, std::deque<int>(200, 0));
+}
+void CpuBox::UpdateHistory()
+{
+        int fullUsage = FullCpuUsage();
+        fullCpuHistory.push_back(fullUsage);
+        if (fullCpuHistory.size() > 200)
+                fullCpuHistory.pop_front();
+
+        std::vector<int> cores = PerCoreUsage();
+        for (size_t i = 0; i < cores.size(); i++)
+        {
+                perCoreHistory[i].push_back(cores[i]);
+                if (perCoreHistory[i].size() > 200)
+                        perCoreHistory[i].pop_front();
+        }
+}
+void CpuBox::DrawHistoryGraph(int x, int y, int width, int height)
+{
+    // Background
+    DrawRectangle(x, y, width, height ,  {0, 0, 0, 255});
+
+    int historySize = fullCpuHistory.size();
+    if (historySize == 0) return;
+
+    // width per point
+    float step = (float)width / historySize;
+
+    // Draw each vertical "bar"
+    for (int i = 0; i < historySize; i++)
+    {
+        int usage = fullCpuHistory[i]; // 0-100
+
+        int barHeight = (usage * height) / 100; // scale usage to graph height
+        int barX = x + i * step+200;
+        int barY = y + (height - barHeight);
+
+        // filled bar
+        DrawRectangle(barX, barY, 10, barHeight, GREEN);
+    }
+}
+
 std::vector<std::string> getCpuDataByLines(std::string searchWord) // //
 {
         std::vector<std::string> dataVector;
@@ -93,7 +140,7 @@ void CpuBox::SystemUptime() // // gets System uptime time in seconds (uptime & i
         strUptimeFromFileVector = GetDataFromFile(path, customDelimiter);
 }
 
-void CpuBox::UptimeSecToMin_Hour()
+std::string CpuBox::UptimeSecToMin_Hour()
 {
         SystemUptime();
 
@@ -112,21 +159,25 @@ void CpuBox::UptimeSecToMin_Hour()
         std::cout << "System Uptime " << std::setw(2) << std::setfill('0') << hour << ":"
                   << std::setw(2) << std::setfill('0') << remainingTime << ":"
                   << std::setw(2) << std::setfill('0') << second << " \n";
+
+        std::ostringstream oss;
+        oss
+            << std::setw(2) << std::setfill('0') << hour << ":"
+            << std::setw(2) << std::setfill('0') << remainingTime << ":"
+            << std::setw(2) << std::setfill('0') << second;
+        return oss.str();
 }
 
-void CpuBox::BatteryPercentage()
+std::string CpuBox::BatteryPercentage()
 {
         std::string path = "/sys/class/power_supply/BAT0/capacity"; // // path of directory for Battery Percentage
         char customDelimiter = ' ';
         std::vector<std::string> batteryDataVector = GetDataFromFile(path, customDelimiter); // // Data stored in a Vector from shared.cpp file's function
 
-        for (std::string i : batteryDataVector)
-        {
-                std::cout << "BATTERY percentage " << i << "%\n";
-        }
+        return "BAT  " + batteryDataVector[0] + "%\n";
 }
 
-void CpuBox::CpuModelName()
+std::string CpuBox::CpuModelName()
 {
 
         std::string path = "/proc/cpuinfo";
@@ -142,15 +193,16 @@ void CpuBox::CpuModelName()
 
                 if (element == "model name	")
                 {
-                        std::cout << "model name" << thisDataLineVector[vectorCount + 1] << "\n ";
-                        break;
+                        // std::cout << "model name" << thisDataLineVector[vectorCount + 1] << "\n ";
+                        return thisDataLineVector[vectorCount + 1];
                 }
                 vectorCount++;
                 // // //std::cout << vectorCount << "\n";
         }
+        return "";
 }
 
-void CpuBox::FullCpuUsage()
+int CpuBox::FullCpuUsage()
 {
         std::vector<std::string> cpuLineVector;                                          // //Vector for store the all cpu's resource line
         double totalCpuUsage = 0;                                                        // // variable for storing final result
@@ -178,19 +230,13 @@ void CpuBox::FullCpuUsage()
         addedCpuUsage = Total_2nd_CpuUsage - Total_1st_CpuUsage;
         totalIdleTime = idle_2nd_Time - idle_1st_Time;
 
-        // //std::cout << Total_1st_CpuUsage << "\t"<<Total_2nd_CpuUsage << "\n";
-        // std::cout << addedCpuUsage << "\t" << totalIdleTime << "\n";
-
-        // std::cout << idle_1st_Time << "\t" << idle_2nd_Time << "\n";
-        //     totalCpuUsage = (addedCpuUsage - totalIdleTime) / addedCpuUsage;
-
         double usedCpu = static_cast<double>(addedCpuUsage - totalIdleTime); // //static_cast<double> for keep division between integers as floating point
         totalCpuUsage = usedCpu / static_cast<double>(addedCpuUsage);
 
-        std::cout << int(totalCpuUsage * 100) << "%\n"; // //turns into 100%
+        return totalCpuUsage * 100; // //turns into 100%
 }
 
-void CpuBox::PerCoreUsage()
+std::vector<int> CpuBox::PerCoreUsage()
 {
         // // taking values of core from stat file before 1sec
         std::tuple<std::vector<int>, std::vector<int>> firstCoreUsage_and_IdleTime = perCoreUsage_and_IdleFunction(); // // returns tuple with 2 vectors
@@ -204,21 +250,25 @@ void CpuBox::PerCoreUsage()
         std::vector<int> totalVectorForEachCore_2nd = std::get<0>(secondCoreUsage_and_IdleTime);
         std::vector<int> total_IdleTimeVector_2nd = std::get<1>(secondCoreUsage_and_IdleTime);
 
+        std::vector<int> perCorePercentagesVector;
+
         for (int currentCore = 0; currentCore < totalVectorForEachCore_1st.size(); currentCore++) // // loop for getting single core's usage
         {
                 double totalCoreUsage = 0;
-                long long int addedCoreUsage = totalVectorForEachCore_1st[currentCore] - totalVectorForEachCore_2nd[currentCore];
-                long long int totalCoreIdleTime = total_IdleTimeVector_1st[currentCore] - total_IdleTimeVector_2nd[currentCore];
+                long long int addedCoreUsage = totalVectorForEachCore_2nd[currentCore] - totalVectorForEachCore_1st[currentCore];
+                long long int totalCoreIdleTime = total_IdleTimeVector_2nd[currentCore] - total_IdleTimeVector_1st[currentCore];
 
                 double usedCore = static_cast<double>(addedCoreUsage - totalCoreIdleTime);
                 totalCoreUsage = usedCore / static_cast<double>(addedCoreUsage);
 
-                std::cout << int(totalCoreUsage * 100) << "% " << "  C" << currentCore << "\n"; // //turns into 100%
+                // std::cout << int(totalCoreUsage * 100) << "% " << "  C" << currentCore << "\n"; // //turns into 100%
+                perCorePercentagesVector.push_back(int(totalCoreUsage * 100)); // // stores each percentages to return it
         }
+        return perCorePercentagesVector;
 }
-
 
 void CpuBox::LoadAvg()
 {
-        
 }
+
+

@@ -39,7 +39,7 @@ std::string GetDataFromFile(std::string filePath)
         return data;
 }
 
-std::string GetEntireLineOfUid(std::string filePath, char customDelimiter , char dataLookFrom )
+std::string GetEntireLineOfUid(std::string filePath, char customDelimiter, char dataLookFrom)
 {
         std::string data, user = "", foundUid;
 
@@ -81,4 +81,52 @@ std::string GetEntireLineOfUid(std::string filePath, char customDelimiter , char
 void myCustomSleep(int sleepTime)
 {
         std::this_thread::sleep_for(std::chrono::seconds(sleepTime));
+}
+
+// ftxui::Color DetermineColor(int percentage)
+
+// {
+        // ftxui::Color graphColor ;
+        // if (percentage < 15)
+        // {
+        //         graphColor = ftxui::Color::Green1;
+        // }
+        // else if (percentage < 30)
+        // {
+        //         graphColor = ftxui::Color::Green;
+        // }
+        // else if (percentage < 70)
+        // {
+        //         graphColor = ftxui::Color::Yellow1;
+        // }
+        // else if (percentage < 85)
+        // {
+        //         graphColor = ftxui::Color::Orange1;
+        // }
+        // else if (percentage < 100)
+        // {
+        //         graphColor = ftxui::Color::Red;
+        // }
+        // return graphColor;
+// }
+
+
+
+std::string MyConversion(int value)
+{
+
+        int MB = value / 1048576; // //converts into bytes to MB
+
+        if (MB < 1024)
+        {
+                return std::to_string(MB) + " MB";
+        }
+        else
+        {
+        double GB = MB / 1024.0;
+        std::ostringstream oss;
+        oss << std::fixed << std::setprecision(2) << GB; 
+        return oss.str() + " GB"; 
+        }
+        return "";
 }

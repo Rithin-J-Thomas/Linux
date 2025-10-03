@@ -12,8 +12,20 @@
 #include <filesystem>
 #include <unistd.h>
 #include <sys/stat.h>
+#include <mutex>
+#include <atomic>
 
-void SingleProcessDetails(int pid);
+struct ProcessInfo
+{
+    int pid;
+    std::string processName;
+    std::string processCommand;
+    int processThreads;
+    std::string userNameFromUid;
+    std::string currentProcessMEMString;
+};
+
+ProcessInfo SingleProcessDetails(int pid);
 std::string GetEntireLine(std::string filePath, char customDelimiter, std::string dataLookFrom);
 std::string KBtoMB(std::string MEMString);
 // // // std::vector<std::string> SingleCpuUsage(std::string filePath, char delimiter);
@@ -23,5 +35,20 @@ std::string KBtoMB(std::string MEMString);
 class ProcBox
 {
 public:
-        void ProcessCollection();
+    int scrollOffset = 0;
+    std::vector<ProcessInfo> ProcessCollection();
+
+    std::vector<ProcessInfo> processes;
+    void UpdateProcesses();
+    void StartUpdating();
+    void StopUpdating();
+    std::mutex procMutex;
+
+
+private:
+    std::thread updateThread;
+    std::atomic<bool> running{false};
+
+    void UpdateLoop();
+    std::vector<ProcessInfo> CollectProcesses();
 };

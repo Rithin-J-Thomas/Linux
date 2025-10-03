@@ -35,40 +35,25 @@ int GetData(std::string Path)
         return 0;
 }
 
-std::string MyConversion(int value)
-{
 
-        int MB = value / 1048576; // //converts into bytes to MB
-
-        if (MB < 1024)
-        {
-                return std::to_string(MB) + " MB";
-        }
-        else
-        {
-                double GB = MB / 1024.0; 
-                 return std::to_string(GB) + " GB"; 
-        }
-        return "";
-}
 
 // // // int GetCurrentSpeed(int newSpeed, int oldSpeed)
 // // // {
 // // //         return   newSpeed  - oldSpeed  ;
 // // // }
 
-void NetworkBox::Download()
+std::string NetworkBox::Download()
 {
         int totalDataReceivedBytes = 0, newtotalDataReceivedBytes = 0; // //stores the total received data
         std::string netInterfacePath = "/sys/class/net/";
         std::string networkInterface = GetDirList(netInterfacePath);
-        // //std::cout<<networkInterface<<"\n";
+
         std::string totalDataReceivedPath = "/sys/class/net/" + networkInterface + "/statistics/rx_bytes";
 
         totalDataReceivedBytes = GetData(totalDataReceivedPath);
 
         std::string data = MyConversion(totalDataReceivedBytes);
-        std::cout << data << " \n";
+        return data;
         // // // myCustomSleep(1);
         // // // newtotalDataReceivedBytes = GetData(totalDataReceivedPath);
 
@@ -77,7 +62,7 @@ void NetworkBox::Download()
         // // // std::cout << currentSpeed/1024 << "\n";
 }
 
-void NetworkBox::Upload()
+ std::string NetworkBox::Upload()
 {
         int totalDataUploaded = 0; // //stores the total transmitted or uploaded  data
         std::string netInterfacePath = "/sys/class/net/";
@@ -86,8 +71,8 @@ void NetworkBox::Upload()
         std::string totalDataUploadedPath = "/sys/class/net/" + networkInterface + "/statistics/tx_bytes";
 
         totalDataUploaded = GetData(totalDataUploadedPath);
-        std::cout << totalDataUploaded << "\n";
+                
+         std::string data = MyConversion(totalDataUploaded);
 
-        totalDataUploaded = totalDataUploaded / 1048576; // //converts into bytes to MB
-        std::cout << totalDataUploaded << " MB\n";
+        return data;
 }

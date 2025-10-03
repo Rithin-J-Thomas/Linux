@@ -2,8 +2,8 @@
 
 //  // //std::cout <<  << "\n";
 
-//  // //function for get all process's details (pid , name , command , threads , user , mem , cpu% )
-void SingleProcessDetails(int pid)
+//  // //function for get all process's details (pid , name , command , threads , user , mem  )
+ProcessInfo SingleProcessDetails(int pid)
 {
         std::string filePath_Name = "/proc/" + std::to_string(pid) + "/comm";            // // file path for Process Name
         std::string filePath_Command = "/proc/" + std::to_string(pid) + "/cmdline";      // //  file path for Process Command
@@ -41,13 +41,24 @@ void SingleProcessDetails(int pid)
 
         currentProcessMEMString = KBtoMB(currentProcessMEMString);
 
-        std::tuple<int, std::string, std::string, int, std::string, std::string> processDetailsTuple = std::make_tuple(pid, processName, processCommand[0], processThreads, userNameFromUid, currentProcessMEMString); // // stores pid , name , command , threads , user , mem , cpu%
+        std::tuple<int, std::string, std::string, int, std::string, std::string> processDetailsTuple = std::make_tuple(pid, processName, processCommand[0], processThreads, userNameFromUid, currentProcessMEMString); // // stores pid , name , command , threads , user , mem
 
-       std::cout << std::get<0>(processDetailsTuple) << "\t" << std::get<1>(processDetailsTuple) << "\t" << std::get<5>(processDetailsTuple) << "\n";
+        // std::cout << std::get<0>(processDetailsTuple) << "\t" << std::get<1>(processDetailsTuple) << "\t" << std::get<5>(processDetailsTuple) << "\n";
+        ProcessInfo info{
+            pid,
+            processName,
+            processCommand[0],
+            processThreads,
+            userNameFromUid,
+            currentProcessMEMString};
+        return info;
 }
 
-void ProcBox::ProcessCollection()
+std::vector<ProcessInfo> ProcBox::ProcessCollection()
 {
+
+        std::vector<ProcessInfo> processVector;
+
         DIR *process; // // directory
 
         const char *path = "/proc"; // // char for opendir()
@@ -59,7 +70,7 @@ void ProcBox::ProcessCollection()
         if (process == NULL)
         {
                 perror("Failed opening directory");
-                return;
+                return processVector;
         }
 
         while ((files = readdir(process)) != NULL)
@@ -74,13 +85,16 @@ void ProcBox::ProcessCollection()
                 {
                         continue;
                 }
-        std::string filePath_ForStatFile = "/proc/" + std::to_string(processID) + "/stat"; // //  file path of each PID's stat
                 SingleProcessDetails(processID);
-
-
+                ProcessInfo info = SingleProcessDetails(processID);
+                processVector.push_back(info);
         }
-        
+
         closedir(process);
+
+        // Inside the loop
+
+        return processVector;
 }
 
 std::string GetEntireLine(std::string filePath, char customDelimiter, std::string dataLookFrom) //  // //Function for take a single line which looking or passed
@@ -123,6 +137,75 @@ std::string KBtoMB(std::string MEMString)
         }
 }
 
+
+void ProcBox::UpdateProcesses()
+{
+    processes.clear();
+    DIR *process = opendir("/proc");
+    if (!process) return;
+
+    struct dirent *files;
+    while ((files = readdir(process)) != NULL)
+    {
+        int pid = 0;
+        try { pid = std::stoi(files->d_name); }
+        catch (...) { continue; }
+
+        ProcessInfo info = SingleProcessDetails(pid);
+        processes.push_back(info);
+    }
+    closedir(process);
+}
+
+
+
+std::vector<ProcessInfo> ProcBox::CollectProcesses() {
+    std::vector<ProcessInfo> processList;
+    DIR *process = opendir("/proc");
+    if (!process) return processList;
+
+    struct dirent *files;
+    while ((files = readdir(process)) != NULL) {
+        int pid = 0;
+        try { pid = std::stoi(files->d_name); }
+        catch (...) { continue; }
+
+        ProcessInfo info = SingleProcessDetails(pid);
+        processList.push_back(info);
+    }
+    closedir(process);
+    return processList;
+}
+
+void ProcBox::UpdateLoop() {
+    while (running) {
+        auto newList = CollectProcesses();
+
+        // lock + swap lists
+        {
+            std::lock_guard<std::mutex> lock(procMutex);
+            processes = std::move(newList);
+        }
+
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+    }
+}
+
+void ProcBox::StartUpdating() {
+    running = true;
+    updateThread = std::thread(&ProcBox::UpdateLoop, this);
+}
+
+void ProcBox::StopUpdating() {
+    running = false;
+    if (updateThread.joinable())
+        updateThread.join();
+}
+
+
+
+
+
 // // // // takes only utime, stime of a single usage from stat
 // // // std::vector<std::string> SingleCpuUsage(std::string filePath, char delimiter)
 // // // {
@@ -142,7 +225,6 @@ std::string KBtoMB(std::string MEMString)
 // // //         // std::cout<< timeVector[0] << "\t"<< timeVector[1] << "\n";
 // // //         return timeVector;
 // // // }
-
 
 // // // std::vector <std::string> EveryCpuUStimeUsage()
 // // // {
@@ -174,7 +256,6 @@ std::string KBtoMB(std::string MEMString)
 // // //                         continue;
 // // //                 }
 // // //         }
-
 
 // // //         return bothUsage;
 // // // }

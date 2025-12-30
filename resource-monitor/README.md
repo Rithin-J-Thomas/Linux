@@ -1,6 +1,6 @@
 # Resource monitor 
 
-A real-time resource monitoring tool which will shows usage and stats of :
+A lightweight real-time system resource monitoring tool for Linux, focused on observing and managing core system metrics directly from the kernel interfaces  shows usage and stats of :
 -  CPU (per-core usage)
 -  RAM & Swap memory
 -  Disk usage
@@ -8,6 +8,10 @@ A real-time resource monitoring tool which will shows usage and stats of :
 -  Running processes (PID, memory usage, command)
 -  Process control (kill switch)
 
+
 > [!NOTE]
-> This isn't a complete project yet. 
+> ## Current State of the Project
+> Core monitoring and process management functionalities are fully implemented, a complete interactive user interface is currently under development.
+
+
 
